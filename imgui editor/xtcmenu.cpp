@@ -95,13 +95,13 @@ void pXtcMenu::Render()
     ImVec2 window_size;
     if (display_size.x < 1920 && display_size.y < 1080)
     {
-        ImGui::SetNextWindowSize({645.f , 720.f / 1080.f * display_size.y });
-        window_size = { 645.f , 720.f / 1080.f * display_size.y };
+        ImGui::SetNextWindowSize({650.f , 720.f / 1080.f * display_size.y });
+        window_size = { 650.f , 720.f / 1080.f * display_size.y };
     }
     else
     {
-        ImGui::SetNextWindowSize({ 645, 720 });
-        window_size = { 645, 720 };
+        ImGui::SetNextWindowSize({ 650.f, 720.f });
+        window_size = { 650.f, 720.f };
     }
     
     ImGui::SetNextWindowPos({ 100,100 }, ImGuiCond_Once);
