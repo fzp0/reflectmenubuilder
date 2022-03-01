@@ -34,6 +34,7 @@
 *.ipch
 .vs/pers0na2 imgui bilder/v16/.suo
 .vs/pers0na2 imgui bilder/v16/Browse.VC.opendb
+.vs
 *.ini
 .build
 .compilation trash
@@ -43,3 +44,6 @@
 *.tlog
 *.log
 *.ini
+*.recipe
+*.ilk
+
