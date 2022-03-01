@@ -1,0 +1,45 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+*.db
+*.ipch
+.vs/pers0na2 imgui bilder/v16/.suo
+.vs/pers0na2 imgui bilder/v16/Browse.VC.opendb
+*.ini
+.build
+.compilation trash
+*.iobj
+*.ipdb
+*.pdb
+*.tlog
+*.log
+*.ini
