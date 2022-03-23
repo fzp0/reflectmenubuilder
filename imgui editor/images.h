@@ -1,5 +1,7 @@
 #pragma once
 #include <vector>
+#include <string>
+#include <d3d9.h>
 
 struct ImageData
 {
@@ -19,6 +21,12 @@ namespace XtcFonts
 	inline ImFont* tab_names;
 	inline ImFont* menu_font;
 }
+
+namespace FilePaths
+{
+	inline std::wstring cfg_path;
+}
+
 
 inline unsigned char visionPNG[21366] = {
 	0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D,

@@ -1,4 +1,7 @@
 #include "xtcmenu.h"
+#include <ShlObj_core.h>
+#include <algorithm>
+#include "project_selection.h"
 #include "images.h"
 
 
@@ -76,14 +79,44 @@ bool ImGui::TabAlt(ImageData image, bool selected, const char* bigid, ImVec2 min
 }
 
 
+
+struct player_info
+{
+    std::string name;
+    bool shoot;
+    bool is_friend;
+};
+
+
+
 static int curtab = 0;
 static float Fortesting = 10.f;
 static int CurrentPenisSelection = 0;
 static int CurrentVaginaSelection = 0;
 static float EpicColor[4] = { 1.f,1.f,1.f,1.f };
+static bool Init_bool = false;
+static int currentConfig = 0;
+static bool playerlist_enabled = false;
+static player_info players[4] =
+{
+    {"Hossik", false, true},
+    {"Rose water", false, true},
+    {"Falton", false, true},
+    {"Nigger Pug", true, false}
+};
+
 
 void pXtcMenu::Render()
 {
+    
+    if (!Init_bool)
+    {
+        RefreshConfigs();
+
+
+        Init_bool = true;
+    }
+
     auto& style = ImGui::GetStyle();
 
     style.WindowRounding = 3.f;
@@ -162,11 +195,11 @@ void pXtcMenu::Render()
     {
         {{10.f,2.f}, {0.f,-5.f}}, // legitbot
         {{9.f,3.f}, {-4.f,-5.f}}, // ragebot
-        {{8.f,3.f}, {-3.f,1.f}}, // visuals
-        {{3.f,-1.f}, {3.f,-1.f}}, // world
-        {{0.f,-5.f}, {5.f,5.f}}, // misc
-        {{8.f,3.f}, {-3.f,-5.f}}, // config
-        {{7.f,2.f}, {-2.f,-3.f}}  // lua
+        {{9.f,3.f}, {-4.f,1.f}}, // visuals
+        {{5.f,-1.f}, {1.f,-1.f}}, // world
+        {{2.f,-6.f}, {3.f,5.f}}, // misc
+        {{10.f,3.f}, {-5.f,-5.f}}, // config
+        {{8.f,2.f}, {-1.f,-3.f}}  // lua
     };
 
     for (int i = 0; i < 7; i++)
@@ -198,8 +231,8 @@ void pXtcMenu::Render()
     ImGui::BeginChild("##BIgTab", { window_size.x - 10, window_size.y - 75 }, false, ImGuiWindowFlags_NoScrollbar);
     switch (curtab)
     {
-    case 0:
-        ImGui::Text("Anal");
+    case 0: //legit bot
+        ImGui::Text("Anals");
         ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
 
 
@@ -248,7 +281,7 @@ void pXtcMenu::Render()
 
         break;
 
-    case 1:
+    case 1: // rage bot
         ImGui::Text("Oral");
 
         if (ImGui::BeginCombo("Vaginas to choose", Vaginas[CurrentVaginaSelection].c_str()))
@@ -267,12 +300,85 @@ void pXtcMenu::Render()
         ImGui::ColorEdit4("Choose Vagina Color", EpicColor, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs);
 
         break;
+    case 2: // visuals
+
+
+        break;
+    case 3: // world visuals
+
+
+        break;
+    case 4: // misc
+
+        ImGui::Checkbox("enable player list", &playerlist_enabled);
+        
+        
+        break;
+    case 5: // config
+
+        if (ImGui::ListBoxHeader("con gfigs"))
+        {
+            for (int i = 0; i < ConfigList.size(); i++)
+            {
+                bool select = i == std::clamp(currentConfig, 0, (int)ConfigList.size() - 1);
+                if (ImGui::Selectable(ConfigList.at(i).c_str(), &select))
+                    currentConfig = i;
+
+            }
+
+
+
+            ImGui::ListBoxFooter();
+        }
+
+
+        if (ImGui::Button("refresh cfg"))
+            RefreshConfigs();
+
+        break;
+    case 6: // lua
+
+
+        break;
     }
     ImGui::EndChild();
     ImGui::PopFont();
     
     ImGui::End();
     ImGui::PopStyleColor(8);
+
+
+    if (playerlist_enabled)
+    {
+        ImGui::GetStyle().WindowPadding = { 5,3 };
+        ImGui::SetNextWindowSize({ 200.f, 50.f }, ImGuiCond_Once);
+        ImGui::Begin("Player List", (bool*)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
+        if (ImGui::BeginTable("playar list", 3))
+        {
+            for (int row = 0; row < 4; row++)
+            {
+                ImGui::PushID(row * 32435);
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();      
+                ImGui::Text(players[row].name.c_str());
+                ImGui::Dummy({ 0, 2 });
+                ImGui::Separator();
+                
+                ImGui::TableNextColumn();         
+                ImGui::Checkbox("Im want Shoot", &players[row].shoot);
+                ImGui::Separator();
+                ImGui::TableNextColumn();
+                ImGui::Checkbox("Dis is Freind", &players[row].is_friend);
+                ImGui::Separator();
+                ImGui::PopID();
+            }
+            ImGui::EndTable();
+        }
+
+
+        ImGui::End();
+    }
+
 }
 
 

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "project_selection.h"
+#include "images.h"
 
 vector<string> ConfigList;
 
@@ -85,7 +86,7 @@ void ReadConfigs(LPCTSTR lpszFileName)
 void RefreshConfigs()
 {
 	ConfigList.clear();
-	wstring ConfigDir = L"C:\\PERS0NA2EDITOR\\*.pers0na2";
+	wstring ConfigDir = FilePaths::cfg_path + L"*.cfg";
 	SearchFiles(ConfigDir.c_str(), ReadConfigs, FALSE);
 }
 

@@ -6337,6 +6337,7 @@ bool ImGui::BeginListBox(const char* label, const ImVec2& size_arg)
     }
 
     BeginChildFrame(id, frame_bb.GetSize());
+    //window->DrawList->AddRect(window->DC.CursorPos, window->DC.CursorPos + frame_size, ImColor(1.f,1.f,1.f,1.f));
     return true;
 }
 

@@ -70,6 +70,12 @@ int main(int, char**)
     pXtcMenu::LoadTextureFromMemory(g_pd3dDevice, (void*)settingsPNG, sizeof(settingsPNG), &LoadedImages::tabIcons[5].texture, &LoadedImages::tabIcons[5].w, &LoadedImages::tabIcons[5].h);
     pXtcMenu::LoadTextureFromMemory(g_pd3dDevice, (void*)web_programmingPNG, sizeof(web_programmingPNG), &LoadedImages::tabIcons[6].texture, &LoadedImages::tabIcons[6].w, &LoadedImages::tabIcons[6].h);
 
+    static TCHAR path[MAX_PATH];
+    if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, 0, path)))
+    {
+        FilePaths::cfg_path = std::wstring(path) + L"\\Reflect\\";
+    }
+
     ImVec4 clear_color = ImVec4(1.0f, 1.0f, 1.0f, 1.00f);
 
     //big Window loop
