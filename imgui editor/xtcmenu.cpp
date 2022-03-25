@@ -78,6 +78,16 @@ bool ImGui::TabAlt(ImageData image, bool selected, const char* bigid, ImVec2 min
     return pressed;
 }
 
+void AltBeginChild(ImVec2 min, ImVec2 max, std::string title)
+{
+
+}
+
+void AltEndChild()
+{
+
+}
+
 
 
 struct player_info
@@ -96,7 +106,8 @@ static int CurrentVaginaSelection = 0;
 static float EpicColor[4] = { 1.f,1.f,1.f,1.f };
 static bool Init_bool = false;
 static int currentConfig = 0;
-static bool playerlist_enabled = false;
+static bool playerlist_enabled = true;
+static bool spectatorlist_enabled = true;
 static player_info players[4] =
 {
     {"Hossik", false, true},
@@ -124,6 +135,8 @@ void pXtcMenu::Render()
     style.WindowBorderSize = 0.f;
     style.FrameBorderSize = 0.f;
     style.WindowPadding = ImVec2{ 0.f,0.f };
+    style.ChildRounding = 3.f;
+
     ImVec2 display_size = ImGui::GetIO().DisplaySize;
     ImVec2 window_size;
     if (display_size.x < 1920 && display_size.y < 1080)
@@ -140,15 +153,18 @@ void pXtcMenu::Render()
     ImGui::SetNextWindowPos({ 100,100 }, ImGuiCond_Once);
     ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(23.f/255.f, 30.f/255.f, 41.f/255.f, 1.f));
     ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.f, 0.f, 0.f, 1.f));
-    ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.f, 1.f, 0.5f, 1.f));
+    ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.f, 0.f, 0.f, 1.f));
     ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.1f, 0.1f, 0.1f, 1.f));
     ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.05f, 0.05f, 0.05f, 1.f));
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 1.f, 0.5f, 0.f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.f, 1.f, 0.5f, 0.f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.f, 1.f, 0.5f, 1.f));
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(32.f / 255.f, 42.f / 255.f, 56.f / 255.f, 1.f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(32.f / 255.f, 42.f / 255.f, 56.f / 255.f, 1.f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(55.f / 255.f, 66.f / 255.f, 81.f / 255.f, 1.f));
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(30.f / 255.f, 41.f / 255.f, 56.f / 255.f, 1.f));
+    ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(30.f / 255.f, 41.f / 255.f, 56.f / 255.f, 1.f));
+
     
     
-    ImGui::Begin("Hello, world!", nullptr, ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+    ImGui::Begin("Hello, world!", nullptr, ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
 
     auto window_pos = ImGui::GetWindowPos();
     
@@ -179,7 +195,7 @@ void pXtcMenu::Render()
     //logo drawing
     int savedflags = ImGui::GetWindowDrawList()->Flags;
     ImGui::GetWindowDrawList()->Flags |= (ImDrawListFlags_AntiAliasedLinesUseTex | ImDrawListFlags_AntiAliasedFill | ImDrawListFlags_AntiAliasedLines);
-    ImGui::GetWindowDrawList()->AddImage(LoadedImages::xtclogo.texture, ImVec2{ window_pos.x - 7.f, window_pos.y - 17.f}, ImVec2{ window_pos.x + 69.f, window_pos.y + 72.f });
+    ImGui::GetWindowDrawList()->AddImage(LoadedImages::xtclogo.texture, ImVec2{ window_pos.x - 7.f, window_pos.y - 12.f}, ImVec2{ window_pos.x + 69.f, window_pos.y + 72.f });
     ImGui::GetWindowDrawList()->Flags = savedflags;
 
     ImGui::SetCursorPosX(70);
@@ -193,9 +209,9 @@ void pXtcMenu::Render()
 
     const std::pair<ImVec2, ImVec2> tabimageoffsets[7] = // offsets for the pictures on the tabs so theyre centered
     {
-        {{10.f,2.f}, {0.f,-5.f}}, // legitbot
-        {{9.f,3.f}, {-4.f,-5.f}}, // ragebot
-        {{9.f,3.f}, {-4.f,1.f}}, // visuals
+        {{13.f,2.f}, {0.f,-5.f}}, // legitbot
+        {{12.f,3.f}, {-4.f,-5.f}}, // ragebot
+        {{10.f,3.f}, {-4.f,1.f}}, // visuals
         {{5.f,-1.f}, {1.f,-1.f}}, // world
         {{2.f,-6.f}, {3.f,5.f}}, // misc
         {{10.f,3.f}, {-5.f,-5.f}}, // config
@@ -225,17 +241,29 @@ void pXtcMenu::Render()
     //tabs
 
     ImGui::PushFont(XtcFonts::menu_font);
+    ImVec2 lgbt_txt_sz = ImGui::CalcTextSize(tabnames[0].c_str());
 
-    ImGui::SetCursorPosX(5);
-    ImGui::SetCursorPosY(70);
-    ImGui::BeginChild("##BIgTab", { window_size.x - 10, window_size.y - 75 }, false, ImGuiWindowFlags_NoScrollbar);
+    style.WindowPadding.x = 5.f;
     switch (curtab)
     {
     case 0: //legit bot
-        ImGui::Text("Anals");
+        // TODO: Convert this into AltBeginChild and AltEndChild
+
+        ImGui::GetWindowDrawList()->AddRect({window_pos.x + 5 , window_pos.y + 70 }, { window_pos.x + 5 + ((window_size.x - 10) / 2), window_pos.y + window_size.y - 5 }, ImColor(30.f / 255.f, 41.f / 255.f, 56.f / 255.f, 1.f) , 3.f);
+        ImGui::PushFont(XtcFonts::tab_names);
+        ImGui::SetCursorPosX(5 + (window_size.x - 10) / 4 - (lgbt_txt_sz.x));
+        ImGui::Text(tabnames[0].c_str());
+        ImGui::PopFont();
+        ImGui::GetWindowDrawList()->AddLine({ window_pos.x + 5 , window_pos.y + 76 + lgbt_txt_sz.y }, { window_pos.x + 5 + ((window_size.x - 10) / 2) , window_pos.y + 76 + lgbt_txt_sz.y }, ImColor(30.f / 255.f, 41.f / 255.f, 56.f / 255.f, 1.f));
+
+        ImGui::SetCursorPosX(10);
+        ImGui::SetCursorPosY(80 + lgbt_txt_sz.y);
+
+        ImGui::BeginChild("LelgitbitGeneral", { (window_size.x - 25) / 2, window_size.y - (88 + lgbt_txt_sz.y) }, false, ImGuiWindowFlags_NoScrollbar);
+        ImGui::Spacing();
+        
+        
         ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
-
-
         if (ImGui::ListBoxHeader("Penises to choose"))
         {
             for (int i = 0; i < 5; i++)
@@ -250,38 +278,50 @@ void pXtcMenu::Render()
 
             ImGui::ListBoxFooter();
         }
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
+        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
 
-        ImGui::Text("Anal");
-        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
-        ImGui::Text("Anal");
-        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
-          
-        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
-
-        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
-        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
-        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
-        ImGui::SliderFloat("Amount Of Penis", &Fortesting, 0.f, 50.f);
-
-        ImGui::Text("Anal");
-        ImGui::Text("Anal");
-        ImGui::Text("Anal");
-        ImGui::Text("Anal");
-        ImGui::Text("Anal");
-        ImGui::Text("Anal");
-        ImGui::Text("Anal");
-        ImGui::Text("Anal");
-        ImGui::Text("Anal");
-        ImGui::Text("Anal");
-        ImGui::Text("Anal");
-        ImGui::Text("Anal");
-        ImGui::Text("Anal");
-        ImGui::Text("Anal");
-        ImGui::Text("Anal");
+        ImGui::EndChild();
 
         break;
 
     case 1: // rage bot
+        ImGui::SetCursorPosX(5);
+        ImGui::SetCursorPosY(70);
+        ImGui::BeginChild("RagebotGeneral", { (window_size.x - 10) / 2, window_size.y - 80 }, true, ImGuiWindowFlags_NoScrollbar);
         ImGui::Text("Oral");
 
         if (ImGui::BeginCombo("Vaginas to choose", Vaginas[CurrentVaginaSelection].c_str()))
@@ -298,23 +338,36 @@ void pXtcMenu::Render()
         }
 
         ImGui::ColorEdit4("Choose Vagina Color", EpicColor, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs);
-
+        ImGui::EndChild();
         break;
     case 2: // visuals
+        ImGui::SetCursorPosX(5);
+        ImGui::SetCursorPosY(70);
+        ImGui::BeginChild("visualgeneral", { (window_size.x - 10) / 2, window_size.y - 80 }, true, ImGuiWindowFlags_NoScrollbar);
 
-
+        ImGui::EndChild();
         break;
     case 3: // world visuals
+        ImGui::SetCursorPosX(5);
+        ImGui::SetCursorPosY(70);
+        ImGui::BeginChild("worLdGeneral", { (window_size.x - 10) / 2, window_size.y - 80 }, true, ImGuiWindowFlags_NoScrollbar);
 
-
+        ImGui::EndChild();
         break;
     case 4: // misc
+        ImGui::SetCursorPosX(5);
+        ImGui::SetCursorPosY(70);
+        ImGui::BeginChild("MiscGneral", { (window_size.x - 10) / 2, window_size.y - 80 }, true, ImGuiWindowFlags_NoScrollbar);
 
         ImGui::Checkbox("enable player list", &playerlist_enabled);
-        
+        ImGui::Checkbox("enable spectator list", &spectatorlist_enabled);
+        ImGui::EndChild();
         
         break;
     case 5: // config
+        ImGui::SetCursorPosX(5);
+        ImGui::SetCursorPosY(70); 
+        ImGui::BeginChild("Configors", { (window_size.x - 10) / 2, window_size.y - 80 }, true, ImGuiWindowFlags_NoScrollbar);
 
         if (ImGui::ListBoxHeader("con gfigs"))
         {
@@ -334,24 +387,26 @@ void pXtcMenu::Render()
 
         if (ImGui::Button("refresh cfg"))
             RefreshConfigs();
+        ImGui::EndChild();
 
         break;
     case 6: // lua
+        ImGui::SetCursorPosX(5);
+        ImGui::SetCursorPosY(70);
+        ImGui::BeginChild("LuaSalacctor", { (window_size.x - 10) / 2, window_size.y - 80 }, true, ImGuiWindowFlags_NoScrollbar);
 
-
+        ImGui::EndChild();
         break;
     }
-    ImGui::EndChild();
     ImGui::PopFont();
     
     ImGui::End();
-    ImGui::PopStyleColor(8);
+    
 
 
     if (playerlist_enabled)
     {
         ImGui::GetStyle().WindowPadding = { 5,3 };
-        ImGui::SetNextWindowSize({ 200.f, 50.f }, ImGuiCond_Once);
         ImGui::Begin("Player List", (bool*)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
         if (ImGui::BeginTable("playar list", 3))
         {
@@ -369,7 +424,14 @@ void pXtcMenu::Render()
                 ImGui::Separator();
                 ImGui::TableNextColumn();
                 ImGui::Checkbox("Dis is Freind", &players[row].is_friend);
-                ImGui::Separator();
+                if (row != 3)
+                {
+                    ImGui::Separator();
+                }
+                else
+                {
+                    ImGui::Spacing();
+                }
                 ImGui::PopID();
             }
             ImGui::EndTable();
@@ -378,6 +440,38 @@ void pXtcMenu::Render()
 
         ImGui::End();
     }
+
+    if (spectatorlist_enabled)
+    {
+        ImGui::GetStyle().WindowPadding = { 5,3 };
+        ImGui::Begin("Spectators", (bool*)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
+        if (ImGui::BeginTable("spactatar list", 1))
+        {
+            for (int row = 0; row < 4; row++)
+            {
+                ImGui::PushID(row * 23232);
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text(players[row].name.c_str());
+                if (row != 3)
+                {
+                    ImGui::Dummy({ 0, 2 });
+                    ImGui::Separator();
+                }
+                else
+                {
+                    ImGui::Spacing();
+                }
+                
+                
+                ImGui::PopID();
+            }
+            ImGui::EndTable();
+        }
+        ImGui::End();
+    }
+
+    ImGui::PopStyleColor(10);
 
 }
 
