@@ -190,6 +190,9 @@ void pXtcMenu::Render()
     ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(30.f / 255.f, 41.f / 255.f, 56.f / 255.f, 1.f));
     ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(32.f / 255.f, 42.f / 255.f, 56.f / 255.f, 1.f));
     ImGui::PushStyleColor(ImGuiCol_CheckMark, ImVec4(0.f, 1.f, 0.5f, 1.f));
+    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(32.f / 255.f, 42.f / 255.f, 56.f / 255.f, 1.f));
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(22.f / 255.f, 32.f / 255.f, 46.f / 255.f, 1.f));
+    ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(55.f / 255.f, 66.f / 255.f, 81.f / 255.f, 1.f));
     
     
     ImGui::Begin("Hello, world!", nullptr, ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
@@ -274,11 +277,15 @@ void pXtcMenu::Render()
     style.WindowPadding.x = 5.f;
     style.FramePadding = { 0.f, 2.f };
     style.FrameRounding = 3.f;
+    //style.ItemInnerSpacing.x = 10.f;
+    //style.SelectableTextAlign = { 0.1f, 0.f };
     
+    const int menufont_height = 13;
+
     switch (curtab)
     {
     case 0: //legit bot
-        AltBeginChild({ 5 ,  70 }, {5 + ((window_size.x - 10) / 2), (window_size.y / 2) + 2 }, tabnames[0]);
+        AltBeginChild({ 5 ,  65 }, {5 + ((window_size.x - 10) / 2), (window_size.y / 2) + 2 }, tabnames[0]);
         
         ImGui::Checkbox("Aimbot", &aiaimbut);
         if (aiaimbut)
@@ -305,6 +312,7 @@ void pXtcMenu::Render()
         {
             ImGui::PushID("polsjdsd");
             ImGui::Text("Backtrack max length");
+            ImGui::SetNextItemWidth(270.f);
             ImGui::SliderFloat("Backtrack max lengtheringsexing", &bt_length, 0.f, 0.2f, "%.3fs");
             ImGui::PopID();
         }
@@ -316,7 +324,7 @@ void pXtcMenu::Render()
 
         AltEndChild();
 
-        AltBeginChild({ 10 + ((window_size.x - 10) / 2), 70 }, { window_size.x - 5, window_size.y - 10 }, "Weapon Configuration");
+        AltBeginChild({ 10 + ((window_size.x - 10) / 2), 65 }, { window_size.x - 5, window_size.y - 10 }, "Weapon Configuration");
 
         ImGui::Text("ImSexing");
         AltEndChild();
@@ -324,26 +332,31 @@ void pXtcMenu::Render()
         break;
 
     case 1: // rage bot
-        ImGui::SetCursorPosX(5);
-        ImGui::SetCursorPosY(70);
-        ImGui::BeginChild("RagebotGeneral", { (window_size.x - 10) / 2, window_size.y - 80 }, true, ImGuiWindowFlags_NoScrollbar);
-        ImGui::Text("Oral");
+        //ImGui::SetCursorPosX(5);
+        //ImGui::SetCursorPosY(70);
+       // ImGui::BeginChild("RagebotGeneral", { (window_size.x - 10) / 2, window_size.y - 80 }, true, ImGuiWindowFlags_NoScrollbar);
+        AltBeginChild({ 5,65 }, { 5 + ((window_size.x - 10) / 2),  window_size.y - 80 }, "Ragebot");
 
-        if (ImGui::BeginCombo("Vaginas to choose", Vaginas[CurrentVaginaSelection].c_str()))
+
+        //this is an example of a proper combobox
+        ImGui::Text("Vaginas to choose"); // label above combo
+        ImGui::SetNextItemWidth(305.f); // combo width
+        if (ImGui::BeginCombo("##Vaginas to choose", Vaginas[CurrentVaginaSelection].c_str())) // combo string id and preview label
         {
-            for (int i = 0; i < 3; i++)
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3.f); // this is for fixing the first selectable clipping into preview box
+            for (int i = 0; i < 3; i++) // amount of selectables
             {
-                bool select = i == CurrentVaginaSelection;
-                if (ImGui::Selectable(Vaginas[i].c_str(), &select))
-                    CurrentVaginaSelection = i;
+                bool select = i == CurrentVaginaSelection; // selection handler
+                if (ImGui::Selectable(Vaginas[i].c_str(), &select, 0, {305.f, menufont_height + 3})) // set the width to combo width or else it looks like shit
+                    CurrentVaginaSelection = i; // selection handler
 
             }
 
-            ImGui::EndCombo();
+            ImGui::EndCombo(); // dont forget to end combo !
         }
 
         ImGui::ColorEdit4("Choose Vagina Color", EpicColor, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs);
-        ImGui::EndChild();
+        AltEndChild();
         break;
     case 2: // visuals
         ImGui::SetCursorPosX(5);
@@ -478,7 +491,7 @@ void pXtcMenu::Render()
         ImGui::End();
     }
 
-    ImGui::PopStyleColor(14);
+    ImGui::PopStyleColor(17);
 
 }
 
