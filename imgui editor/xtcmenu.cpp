@@ -332,9 +332,6 @@ void pXtcMenu::Render()
         break;
 
     case 1: // rage bot
-        //ImGui::SetCursorPosX(5);
-        //ImGui::SetCursorPosY(70);
-       // ImGui::BeginChild("RagebotGeneral", { (window_size.x - 10) / 2, window_size.y - 80 }, true, ImGuiWindowFlags_NoScrollbar);
         AltBeginChild({ 5,65 }, { 5 + ((window_size.x - 10) / 2),  window_size.y - 80 }, "Ragebot");
 
 
